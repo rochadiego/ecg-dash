@@ -67,7 +67,7 @@ const Header: React.FC<HeaderProps> = (props) => {
       label: (
         <Label>
           <EvaIcon name="droplet" options={{ fill: '#a6c1ff' }} />
-          Default
+          Padrão
         </Label>
       ),
     },
@@ -76,28 +76,9 @@ const Header: React.FC<HeaderProps> = (props) => {
       label: (
         <Label>
           <EvaIcon name="droplet" options={{ fill: '#192038' }} />
-          Dark
+          Noturno
         </Label>
       ),
-    },
-    {
-      value: 'cosmic',
-      label: (
-        <Label>
-          <EvaIcon name="droplet" options={{ fill: '#5a37b8' }} />
-          Cosmic
-        </Label>
-      ),
-    },
-    {
-      value: 'corporate',
-      label: (
-        <Label>
-          <EvaIcon name="droplet" options={{ fill: '#3366ff' }} />
-          Corporate
-        </Label>
-      ),
-      selected: true,
     },
   ];
   return (
@@ -115,7 +96,7 @@ const Header: React.FC<HeaderProps> = (props) => {
             {
               content: (
                 <Link href="/">
-                  <a className="logo">Admin Template</a>
+                  <a className="logo">Marcação ECG</a>
                 </Link>
               ),
             },
@@ -132,13 +113,6 @@ const Header: React.FC<HeaderProps> = (props) => {
                 />
               ),
             },
-            {
-              content: (
-                <Button size="Small" onClick={() => props.changeDir()}>
-                  {props.dir}
-                </Button>
-              ),
-            },
           ]}
         />
         <Actions
@@ -147,46 +121,18 @@ const Header: React.FC<HeaderProps> = (props) => {
           actions={[
             {
               content: (
-                <a
-                  className="left"
-                  href={`https://github.com/paljs/nextjs-admin-template`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span className="github">Support us in GitHub</span>
-                  <img src={`https://badgen.net/github/stars/paljs/nextjs-admin-template`} />
-                </a>
-              ),
-            },
-            {
-              content: (
-                <a
-                  href="https://paljs.slack.com/join/shared_invite/zt-i4z1bx9j-CnPaPRR8dtKsKfALCKSRKQ#/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <img height="20" src="/slack.svg" alt="slack" />
-                </a>
-              ),
-            },
-            {
-              icon: 'twitter',
-              url: { href: 'https://twitter.com/AhmedElywh', target: '_blank' },
-            },
-            {
-              content: (
                 <ContextMenu
                   nextJs
                   style={{ cursor: 'pointer' }}
                   placement="bottom"
                   currentPath={router.pathname}
                   items={[
-                    { title: 'Profile', link: { href: '/modal-overlays/tooltip' } },
-                    { title: 'Log out', link: { href: '/logout' } },
+                    { title: 'Perfil', link: { href: '/modal-overlays/tooltip' } },
+                    { title: 'Sair', link: { href: '/logout' } },
                   ]}
                   Link={Link}
                 >
-                  <User image="url('/icons/icon-72x72.png')" name="Ahmed Elywa" title="Manger" size="Medium" />
+                  <User image="url('/icons/icon-72x72.png')" name="João Silva" title="Médico" size="Medium" />
                 </ContextMenu>
               ),
             },

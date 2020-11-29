@@ -3,7 +3,7 @@ import Head from 'next/head';
 
 const SEO: React.FC<SEOProps> = ({ description, keywords, title }) => (
   <Head>
-    <title>{title} | Next.Js free admin react template</title>
+    <title>{title} | Marcação de sinais eletrocardiográficos</title>
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords?.join(', ')} />
     <meta property="og:type" content="website" />
@@ -11,12 +11,6 @@ const SEO: React.FC<SEOProps> = ({ description, keywords, title }) => (
     <meta name="og:description" property="og:description" content={description} />
     <meta property="og:site_name" content="" />
     <meta property="og:url" content="" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:site" content="" />
-    <meta name="twitter:creator" content="@AhmedElywh" />
-    <meta name="twitter:image" content="" />
     <meta property="og:image" content="" />
     <link rel="icon" type="image/png" href="/icons/icon-72x72.png" />
     <link rel="apple-touch-icon" type="image/png" href="/icons/icon-72x72.png" />
@@ -44,29 +38,8 @@ export interface SEOProps {
 }
 
 SEO.defaultProps = {
-  description: 'Free admin dashboard template based on Next.Js with @paljs/ui component package',
-  keywords: [
-    'admin-dashboard',
-    'admin',
-    'react',
-    'reactjs',
-    'dashboard',
-    'dashboard-templates',
-    'themes',
-    'styled-components',
-    'styledcomponents',
-    'admin-template',
-    'free-admin-template',
-    'react-admin-dashboard',
-    'react-admin-panel',
-    'react-admin-component',
-    'nextjs',
-    'react-forms',
-    'react-select',
-    'react-accordion',
-    'react-chat',
-    'react-admin-template',
-  ],
+  description: 'Plataforma para marcação de sinais eletrocardiográficos',
+  keywords: ['ECG', 'IFPB', 'marcação'],
 };
 
 export default SEO;
