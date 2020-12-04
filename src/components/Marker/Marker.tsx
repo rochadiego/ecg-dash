@@ -1,127 +1,157 @@
+import { Card, CardBody } from '@paljs/ui/Card';
+import { Button } from '@paljs/ui/Button';
+import Alert from '@paljs/ui/Alert';
+import Col from '@paljs/ui/Col';
+import Row from '@paljs/ui/Row';
+import React, { useState, useEffect } from 'react';
+
 import axios from 'axios';
-import React, { Component } from 'react';
-// import Plot from 'react-plotly.js';
-import Plotly from 'plotly.js';
-import createPlotlyComponent from 'react-plotly.js/factory';
-const Plot = createPlotlyComponent(Plotly);
+import { Line } from 'react-chartjs-2';
 
-var ECGData;
-var ECGLayout;
+import * as defaults from './defaults';
 
-var contadorDePontosMarcados = 0;
-var annotations;
+interface ICoordinate {
+  x: number;
+  y: number;
+}
 
-const pontos_ecg = [
-  'Início da onda P',
-  'Pico da onda P',
-  'Final da onda P',
-  'Início do complexo QRS',
-  'Vale Q',
-  'Pico R',
-  'Vale S',
-  'Final do complexo QRS',
-  'Início da onda T',
-  'Pico da onda T',
-  'Final da onda T',
-  'Marcação concluída',
-];
+interface ICoordinateIndex {
+  x: number;
+  y: number;
+}
 
-class Marker extends Component {
-  componentDidMount() {
-    axios
-      .get('curva.json')
-      .then((response) => {
-        this.setState({
-          data: [
-            {
-              x: response.data.columns,
-              y: response.data.ecg[0],
-            },
-          ],
-          layout: response.data.layout,
-        });
-      })
-      .catch(() => {
-        alert('Não foi possível acessar os dados.');
-      });
-  }
+function Marker() {
+  const [state, setState] = useState(defaults.GRAPH);
+  const [pointerCount, setPointerCount] = useState(0);
+  const [coordinates, setCoordinates] = useState<ICoordinate[]>([]);
+  const [coordinatesIndex, setCoordinatesIndex] = useState<ICoordinateIndex[]>([]);
+  const [alert, setAlert] = useState(false);
 
-  constructor(props) {
-    super(props);
-    this.ECGData = {};
-    this.state = { nome: 'Curva', data: ECGData, layout: ECGLayout, frames: [], config: {}, contadorDePontosMarcados };
-  }
-  rmLastECGPoint = () => {
-    const { graphDiv } = this.state;
-    try {
-      if (this.state.contadorDePontosMarcados > 0) {
-        annotations.pop();
-        this.setState({ contadorDePontosMarcados: this.state.contadorDePontosMarcados - 1 });
-        Plotly.relayout(graphDiv, { annotations: annotations });
+  useEffect(() => {
+    async function getData() {
+      try {
+        let res = await axios.get('curve.json');
+        if (res) {
+          const x: number[] = res.data.columns;
+          const y: number[] = res.data.ecg[0];
+          const pointBackgroundColor: string[] = Array.from(Array(x.length).keys()).map(() => '#fff');
+          const pointRadius: number[] = Array.from(Array(x.length).keys()).map(() => 1);
+
+          setState({
+            ...state,
+            labels: x,
+            datasets: [
+              ...state.datasets.map((obj) => {
+                return {
+                  ...obj,
+                  data: y,
+                  pointRadius: pointRadius,
+                  pointBackgroundColor: pointBackgroundColor,
+                };
+              }),
+            ],
+          });
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (error) {
-      alert('Não há pontos para remover');
     }
-  };
+    getData();
+  }, []);
 
-  setEcgPoints = (data) => {
-    // contadorDePontosMarcados += 1;
-    if (this.state.contadorDePontosMarcados <= 11) {
-      const { graphDiv, layout } = this.state;
-      data.points.forEach((point) => {
-        var annotate_text = 'x = ' + point.x + 'y = ' + point.y.toPrecision(4);
-        var annotation = {
-          text: annotate_text,
-          x: point.x,
-          y: parseFloat(point.y.toPrecision(4)),
-        };
-        annotations = layout.annotations || [];
-        annotations.push(annotation);
-        this.setState({
-          contadorDePontosMarcados: this.state.contadorDePontosMarcados + 1,
-        });
-        Plotly.relayout(graphDiv, { annotations: annotations });
-      });
-    }
-  };
-
-  //Type annotations can only be used in TypeScript files.
-  onInitialized = (figure: any, graphDiv: any): void => {
-    this.setState({ graphDiv });
-    this.onInitialListner();
-  };
-
-  onInitialListner = () => {
-    const { graphDiv } = this.state;
-    graphDiv.addEventListener('click', (evt) => {
-      //var xInDataCoord = evt.x;
-      //var yInDataCoord = evt.y;
-    });
-  };
-
-  render() {
-    return (
-      <div className="chart">
-        <div>
-          <h1>{pontos_ecg[this.state.contadorDePontosMarcados]}</h1>
-          <button className="btn" onClick={() => this.rmLastECGPoint()}>
-            Remover último ponto
-          </button>
-        </div>
-        <div>
-          <Plot
-            ref={(node) => {
-              this.graphNode = node;
-            }}
-            data={this.state.data}
-            layout={this.state.layout}
-            onInitialized={this.onInitialized}
-            onClick={(data) => this.setEcgPoints(data)}
-          />
-        </div>
-      </div>
-    );
+  function removeLastPoint() {
+    if (pointerCount > 0) {
+      setPointerCount(pointerCount - 1);
+      const newCoordinates = coordinates.splice(-1, 1);
+      setCoordinates(newCoordinates);
+      const newCoordinatesIndex = coordinatesIndex.splice(-1, 1);
+      setCoordinatesIndex(newCoordinatesIndex);
+    } else setAlert(true);
   }
+
+  const setPoints = {
+    onClick: (_e: MouseEvent, element: any) => {
+      if (element.length > 0 && pointerCount < 11) {
+        const labelIndex = element[0]._index;
+        const valueIndex = element[0]._datasetIndex;
+        const label = state.labels[labelIndex];
+        const value = state.datasets[valueIndex].data[labelIndex];
+
+        setPointerCount(pointerCount + 1);
+        setAlert(false);
+        const newCoordinates = [...coordinates, { x: label, y: value }];
+        setCoordinates(newCoordinates);
+        const newCoordinatesIndex = [...coordinatesIndex, { x: labelIndex, y: valueIndex }];
+        setCoordinatesIndex(newCoordinatesIndex);
+      }
+      // console.log(coordinatesIndex);
+    },
+  };
+
+  // useEffect(() => {
+  //   // const color = '#ed5249';
+  //   const radius = 6;
+
+  //   setState({
+  //     ...state,
+  //     datasets: [
+  //       ...state.datasets.map((obj, objIdx) => {
+  //         return {
+  //           ...obj,
+  //           pointRadius: obj.pointRadius.map((a, pointIdx) => {
+
+  //             return coordinatesIndex.map(coordinatesIndexObj => {
+  //               if (coordinatesIndexObj.y == objIdx && coordinatesIndexObj.x == pointIdx) return radius;
+  //               else return a;
+  //             })
+  //             // return aaa;
+  //           }),
+
+  //           pointBackgroundColor: obj.pointBackgroundColor.map(b => {
+  //             return b;
+  //           })
+  //         }
+  //       })
+  //     ]
+  //   });
+  // }, []);
+  // coordinatesIndex.map(coordinatesIndexObj => {
+  //   state.datasets[coordinatesIndexObj.y].pointBackgroundColor[coordinatesIndexObj.x] = '#ed5249';
+  //   state.datasets[coordinatesIndexObj.y].pointRadius[coordinatesIndexObj.x] = 6;
+  //   setState(state);
+  // })
+  // }, [coordinatesIndex])
+
+  const alertJsx = alert ? (
+    <Alert status="Danger" closable onClose={() => setAlert(false)} key="0">
+      Não há pontos para remover!
+    </Alert>
+  ) : null;
+
+  return (
+    <div>
+      {alertJsx}
+      <Card>
+        <h2 style={{ textAlign: 'center' }}>{defaults.ECG_POINTS[pointerCount]}</h2>
+        <CardBody>
+          <Row>
+            <Col key="Danger" style={{ marginBottom: '1.5rem' }} breakPoint={{ xs: true }}>
+              <Button fullWidth status="Danger" onClick={removeLastPoint}>
+                remover último ponto marcado
+              </Button>
+            </Col>
+            <Col key="Success" style={{ marginBottom: '1.5rem' }} breakPoint={{ xs: true }}>
+              <Button fullWidth status="Success">
+                enviar pontos marcados
+              </Button>
+            </Col>
+          </Row>
+        </CardBody>
+      </Card>
+
+      <Line data={state} options={setPoints} width={400} height={200} />
+    </div>
+  );
 }
 
 export default Marker;
