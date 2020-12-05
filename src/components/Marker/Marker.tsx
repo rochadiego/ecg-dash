@@ -61,10 +61,22 @@ function Marker() {
 
   function removeLastPoint() {
     if (pointerCount > 0) {
+      //decrement point counter
       setPointerCount(pointerCount - 1);
+
+      //decrement the last coordinate
       const newCoordinates = coordinates.splice(-1, 1);
       setCoordinates(newCoordinates);
-      const newCoordinatesIndex = coordinatesIndex.splice(-1, 1);
+
+      //decrement the last chart point
+      const removeCoordinatesIndex = coordinatesIndex[coordinatesIndex.length - 1];
+      const newState = { ...state };
+      newState.datasets[removeCoordinatesIndex.y].pointBackgroundColor[removeCoordinatesIndex.x] = '#fff';
+      newState.datasets[removeCoordinatesIndex.y].pointRadius[removeCoordinatesIndex.x] = 1;
+      setState(newState);
+
+      //decrement the last coordinate index
+      const newCoordinatesIndex = coordinatesIndex.slice(0, coordinatesIndex.length - 1);
       setCoordinatesIndex(newCoordinatesIndex);
     } else setAlert(true);
   }
@@ -77,50 +89,27 @@ function Marker() {
         const label = state.labels[labelIndex];
         const value = state.datasets[valueIndex].data[labelIndex];
 
+        // add point counter
         setPointerCount(pointerCount + 1);
-        setAlert(false);
+
+        //add new coordinates
         const newCoordinates = [...coordinates, { x: label, y: value }];
         setCoordinates(newCoordinates);
+
+        //add new coorditates index
         const newCoordinatesIndex = [...coordinatesIndex, { x: labelIndex, y: valueIndex }];
         setCoordinatesIndex(newCoordinatesIndex);
+
+        //add marked point in chart
+        const newState = { ...state };
+        newState.datasets[valueIndex].pointBackgroundColor[labelIndex] = '#ed5249';
+        newState.datasets[valueIndex].pointRadius[labelIndex] = 6;
+        setState(newState);
+
+        setAlert(false);
       }
-      // console.log(coordinatesIndex);
     },
   };
-
-  // useEffect(() => {
-  //   // const color = '#ed5249';
-  //   const radius = 6;
-
-  //   setState({
-  //     ...state,
-  //     datasets: [
-  //       ...state.datasets.map((obj, objIdx) => {
-  //         return {
-  //           ...obj,
-  //           pointRadius: obj.pointRadius.map((a, pointIdx) => {
-
-  //             return coordinatesIndex.map(coordinatesIndexObj => {
-  //               if (coordinatesIndexObj.y == objIdx && coordinatesIndexObj.x == pointIdx) return radius;
-  //               else return a;
-  //             })
-  //             // return aaa;
-  //           }),
-
-  //           pointBackgroundColor: obj.pointBackgroundColor.map(b => {
-  //             return b;
-  //           })
-  //         }
-  //       })
-  //     ]
-  //   });
-  // }, []);
-  // coordinatesIndex.map(coordinatesIndexObj => {
-  //   state.datasets[coordinatesIndexObj.y].pointBackgroundColor[coordinatesIndexObj.x] = '#ed5249';
-  //   state.datasets[coordinatesIndexObj.y].pointRadius[coordinatesIndexObj.x] = 6;
-  //   setState(state);
-  // })
-  // }, [coordinatesIndex])
 
   const alertJsx = alert ? (
     <Alert status="Danger" closable onClose={() => setAlert(false)} key="0">
