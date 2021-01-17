@@ -1,11 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
+import { signIn, useSession } from 'next-auth/client';
 
 export default function Index() {
+  const [session, loading] = useSession();
+
   const router = useRouter();
-  useEffect(() => {
-    router.push('/extra-components/accordion');
-  }),
-    [];
+
+  if (!loading && !session) signIn('auth0');
+  else if (!loading && session) router.push('dashboard');
+
   return <div />;
 }

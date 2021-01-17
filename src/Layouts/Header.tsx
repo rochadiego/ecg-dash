@@ -10,6 +10,8 @@ import ContextMenu from '@paljs/ui/ContextMenu';
 import User from '@paljs/ui/User';
 import { breakpointDown } from '@paljs/ui/breakpoints';
 
+import { useSession } from 'next-auth/client';
+
 const HeaderStyle = styled.div`
   display: flex;
   width: 100%;
@@ -60,6 +62,8 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = (props) => {
   const router = useRouter();
+  const [session, loading] = useSession();
+
   const themeOptions = () => [
     {
       value: 'default',
@@ -131,7 +135,12 @@ const Header: React.FC<HeaderProps> = (props) => {
                   ]}
                   Link={Link}
                 >
-                  <User image="url('/icons/icon-72x72.png')" name="João Silva" title="Médico" size="Medium" />
+                  <User
+                    image={'url(' + session?.user.image + ')'}
+                    name={session?.user.name}
+                    title="Médico"
+                    size="Medium"
+                  />
                 </ContextMenu>
               ),
             },

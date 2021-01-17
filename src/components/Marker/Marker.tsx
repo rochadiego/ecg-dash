@@ -121,15 +121,17 @@ function Marker() {
     <div>
       {alertJsx}
       <Card>
-        <h2 style={{ textAlign: 'center' }}>{defaults.ECG_POINTS[pointerCount]}</h2>
+        <h2 style={{ textAlign: 'center', marginTop: '0.3rem', marginBottom: '0.1rem' }}>
+          {defaults.ECG_POINTS[pointerCount]}
+        </h2>
         <CardBody>
           <Row>
-            <Col key="Danger" style={{ marginBottom: '1.5rem' }} breakPoint={{ xs: true }}>
+            <Col key="Danger" style={{ marginBottom: '0.2rem' }} breakPoint={{ xs: true }}>
               <Button fullWidth status="Danger" onClick={removeLastPoint}>
                 remover último ponto marcado
               </Button>
             </Col>
-            <Col key="Success" style={{ marginBottom: '1.5rem' }} breakPoint={{ xs: true }}>
+            <Col key="Success" style={{ marginBottom: '0.2rem' }} breakPoint={{ xs: true }}>
               <Button fullWidth status="Success">
                 enviar pontos marcados
               </Button>
@@ -138,7 +140,7 @@ function Marker() {
         </CardBody>
       </Card>
 
-      <Line data={state} options={setPoints} width={400} height={200} />
+      <Line data={state} options={setPoints} width={400} height={150} />
     </div>
   );
 }
