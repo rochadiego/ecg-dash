@@ -63,6 +63,9 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = (props) => {
   const router = useRouter();
   const [session, loading] = useSession();
+  if (loading) {
+    //
+  }
 
   const themeOptions = () => [
     {
@@ -137,7 +140,7 @@ const Header: React.FC<HeaderProps> = (props) => {
                 >
                   <User
                     image={'url(' + session?.user.image + ')'}
-                    name={session?.user.name}
+                    name={'' + session?.user.name}
                     title="Médico"
                     size="Medium"
                   />
