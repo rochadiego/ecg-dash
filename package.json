@@ -12,7 +12,7 @@
     "@tinymce/tinymce-react": "3.7.0",
     "@types/react-chartjs-2": "^2.5.7",
     "@vercel/node": "^1.9.0",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "babel-plugin-styled-components": "^1.11.1",
     "chart.js": "^2.9.4",
     "next": "^9.5.5",
